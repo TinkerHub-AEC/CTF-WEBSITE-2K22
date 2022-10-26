@@ -1,16 +1,14 @@
 const { GoogleSpreadsheet } = require('google-spreadsheet');
-const creds = require('./key.json');
-const { registrationSpreadsheetId, questionSpreadSheetId } = require('../config');
+const creds = require('../config/serviceAccountKey.json');
 
 var regSheet;
 var questSheet;
 var questRows;
 
 async function verifyTeam({ token, teamName }) {
-
     if (!regSheet) {
         try {
-            regSheet = new GoogleSpreadsheet(registrationSpreadsheetId);
+            regSheet = new GoogleSpreadsheet(process.env.REGISTRATION_SPREADSHEET_ID);
             await regSheet.useServiceAccountAuth({
                 client_email: creds.client_email,
                 private_key: creds.private_key,
@@ -48,8 +46,8 @@ async function getQuestions() {
 }
 
 
-async function refreshQuestions(next) {
-    questSheet = new GoogleSpreadsheet(questionSpreadSheetId);
+async function refreshQuestions(_next) {
+    questSheet = new GoogleSpreadsheet(process.env.QUESTION_SPREADSHEET_ID);
     try {
         await questSheet.useServiceAccountAuth({
             client_email: creds.client_email,
@@ -57,6 +55,7 @@ async function refreshQuestions(next) {
         });
 
         await questSheet.loadInfo();
+        await new Promise(r => setTimeout(r, 2000));
         questRows = await questSheet.sheetsByIndex[0].getRows();
     } catch (err) {
         console.log(err);

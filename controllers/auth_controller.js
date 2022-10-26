@@ -1,7 +1,6 @@
 const Team = require("../models/team");
 const Score = require("../models/score");
 const jwt = require('jsonwebtoken');
-const { jwtSecretKey } = require('../config');
 const { verifyTeam } = require('../services/google_spreadSheet_service');
 
 
@@ -47,23 +46,24 @@ const handleErrors = (err) => {
 // create json web token
 const maxAge = 2 * 24 * 60 * 60;
 const createToken = (id) => {
-    return jwt.sign({ id }, jwtSecretKey, {
-        expiresIn: maxAge
-    });
+    return jwt.sign({ id }, process.env.JWT_SECRET,
+        {
+            expiresIn: maxAge
+        });
 };
 
 viewPath = __dirname + "../views";
 
 // Get methods
-module.exports.signup_get = (req, res) => {
+module.exports.signup_get = (_req, res) => {
     res.sendFile(viewPath + '/register.html')
 }
 
-module.exports.login_get = (req, res) => {
+module.exports.login_get = (_req, res) => {
     res.sendFile(viewPath + '/login.html')
 }
 
-module.exports.logout_get = (req, res) => {
+module.exports.logout_get = (_req, res) => {
     res.cookie('auth', '', { maxAge: 1 });
     res.redirect('/');
 }
@@ -71,17 +71,16 @@ module.exports.logout_get = (req, res) => {
 
 
 //POST methods
-module.exports.signup_post = async(req, res, next) => {
+module.exports.signup_post = async (req, res, next) => {
     const { teamToken, teamName, password } = req.body;
     try {
         const findInSheet = await verifyTeam({ token: teamToken, teamName });
         if (findInSheet) {
             const team = await Team.create({ teamName, teamToken, password });
-            const time = new Date().getTime();
             await Score.create({ teamName, '_id': team._id, 'totalTime': 0, 'level': 0, 'completedLevel': [] });
             const token = createToken(team._id);
             res.cookie('auth', token, { httpOnly: true, maxAge: maxAge * 1000 });
-            res.redirect('/instructions.html')
+            res.sendFile('/instructions.html')
             next();
         }
     } catch (err) {
@@ -91,7 +90,7 @@ module.exports.signup_post = async(req, res, next) => {
 
 }
 
-module.exports.login_post = async(req, res) => {
+module.exports.login_post = async (req, res) => {
     const { teamName, password } = req.body;
     try {
         const user = await Team.login(teamName, password);

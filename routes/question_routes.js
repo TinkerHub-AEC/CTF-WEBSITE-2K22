@@ -7,7 +7,7 @@ const router = Router();
 viewPath = __dirname + "../views";
 
 router.get('/instructions.html', requireAuth, questController.instruction_get);
-router.get('/:name', requireAuth, async(req, res, next) => {
+router.get('/:name', requireAuth, async (req, res, _next) => {
     try {
         const name = req.params.name;
         const questions = await getQuestions();
@@ -22,7 +22,7 @@ router.get('/:name', requireAuth, async(req, res, next) => {
         console.log(err);
     }
 });
-router.post('/:name', requireAuth, async(req, res, next) => {
+router.post('/:name', requireAuth, async (req, res, _next) => {
     try {
         const name = req.params.name;
         const questions = await getQuestions();

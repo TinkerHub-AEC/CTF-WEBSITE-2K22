@@ -10,7 +10,7 @@ module.exports.index_get = (_req, res) => {
     res.sendFile(viewPath + '/index.html');
 }
 
-module.exports.hackerboard_get = async(_req, res) => {
+module.exports.hackerboard_get = async (_req, res) => {
     const scores = await Score.find();
     const teamList = [];
     scores.forEach((team) => {
@@ -32,14 +32,14 @@ module.exports.about_get = (_req, res) => {
 }
 
 
-module.exports.refresh = async function(req, res) {
+module.exports.refresh = async function (req, res) {
     await refreshQuestions().then(res.status(200).json({
         done: "success"
-    })).catch((e) => res.status(400).json({ error: "error" }));
+    })).catch((e) => res.status(400).json({ error: e }));
 }
 
-function msToTime(millis) {
-    var minutes = Math.floor(millis / 60000);
-    var seconds = ((millis % 60000) / 1000).toFixed(0);
+function msToTime(ms) {
+    var minutes = Math.floor(ms / 60000);
+    var seconds = ((ms % 60000) / 1000).toFixed(0);
     return `${minutes}:${(seconds < 10 ? "0" : "")}${seconds}`;
 }
