@@ -10,8 +10,8 @@ async function verifyTeam({ token, teamName }) {
         try {
             regSheet = new GoogleSpreadsheet(process.env.REGISTRATION_SPREADSHEET_ID);
             await regSheet.useServiceAccountAuth({
-                client_email: creds.client_email,
-                private_key: creds.private_key,
+                client_email: process.env.CLIENT_EMAIL,
+                private_key: process.env.PRIVATE_KEY,
             });
             await regSheet.loadInfo();
         } catch (err) {
@@ -50,8 +50,8 @@ async function refreshQuestions(_next) {
     questSheet = new GoogleSpreadsheet(process.env.QUESTION_SPREADSHEET_ID);
     try {
         await questSheet.useServiceAccountAuth({
-            client_email: creds.client_email,
-            private_key: creds.private_key,
+            client_email: process.env.CLIENT_EMAIL,
+            private_key: process.env.PRIVATE_KEY,
         });
 
         await questSheet.loadInfo();
