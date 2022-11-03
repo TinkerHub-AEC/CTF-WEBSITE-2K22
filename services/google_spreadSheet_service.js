@@ -50,8 +50,8 @@ async function refreshQuestions(_next) {
     questSheet = new GoogleSpreadsheet(process.env.QUESTION_SPREADSHEET_ID);
     try {
         await questSheet.useServiceAccountAuth({
-            client_email: process.env.CLIENT_EMAIL,
-            private_key: process.env.PRIVATE_KEY,
+            client_email: creds.client_email,
+            private_key: creds.private_key,
         });
 
         await questSheet.loadInfo();
