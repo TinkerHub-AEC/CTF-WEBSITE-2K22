@@ -1,5 +1,5 @@
 const { GoogleSpreadsheet } = require('google-spreadsheet');
-const creds = require('../config/serviceAccountKey.json');
+const creds = require('./config.json');
 
 var regSheet;
 var questSheet;
@@ -10,8 +10,8 @@ async function verifyTeam({ token, teamName }) {
         try {
             regSheet = new GoogleSpreadsheet(process.env.REGISTRATION_SPREADSHEET_ID);
             await regSheet.useServiceAccountAuth({
-                client_email: process.env.CLIENT_EMAIL,
-                private_key: process.env.PRIVATE_KEY,
+                client_email: creds.client_email,
+                private_key: creds.private_key,
             });
             await regSheet.loadInfo();
         } catch (err) {
